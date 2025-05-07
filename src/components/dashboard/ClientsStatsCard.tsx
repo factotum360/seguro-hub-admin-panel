@@ -33,9 +33,9 @@ const ClientsStatsCard = ({ activeColor }: ClientsStatsCardProps) => {
                 },
                 dataLabels: { enabled: false },
               }}
-              series={[76, 24]}
+              series={[76, 24]} // Ensuring this is an array of numbers, not strings
               type="pie"
-              width="100%"
+              width={100} // Changed from "100%" to 100 as the type expects a number
               height={160}
             />
           </div>
