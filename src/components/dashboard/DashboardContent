@@ -1,17 +1,12 @@
 import React from 'react';
 import { DashboardActionCards } from './DashboardActionCards';
-// ... otros imports
 
-export const DashboardContent: React.FC<DashboardContentProps> = ({
-  summary,
-  formatCurrency,
-  handleToggleTaskStatus,
-  exchangeRate
-}) => {
+const DashboardContent: React.FC = () => {
   return (
     <>
       <DashboardActionCards />
-      {/* Resto del contenido existente */}
     </>
   );
 };
+
+export { DashboardContent };

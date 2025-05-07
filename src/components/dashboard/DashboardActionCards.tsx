@@ -1,3 +1,4 @@
+import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
@@ -9,7 +10,7 @@ import {
   FileSearch
 } from 'lucide-react';
 
-const DashboardActionCards = () => {
+export const DashboardActionCards: React.FC = () => {
   // Agregar el manejador del clic para la cotización
   const handleQuoteClick = () => {
     const cotizacionesSection = document.getElementById('sidebar-cotizaciones');
@@ -82,4 +83,4 @@ const DashboardActionCards = () => {
   );
 };
 
-export default DashboardActionCards;
+export { DashboardActionCards };
