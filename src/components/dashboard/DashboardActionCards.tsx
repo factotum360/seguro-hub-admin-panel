@@ -9,13 +9,19 @@ import {
   Tag,
   FileSearch
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const DashboardActionCards: React.FC = () => {
-  // Agregar el manejador del clic para la cotización
+  const navigate = useNavigate();
+  
+  // Actualizar el manejador del clic para la cotización
   const handleQuoteClick = () => {
-    const cotizacionesSection = document.getElementById('sidebar-cotizaciones');
-    if (cotizacionesSection) {
-      cotizacionesSection.scrollIntoView({ behavior: 'smooth' });
+    // Navegar a la sección de cotizaciones y activar el sidebar
+    navigate('/cotizaciones');
+    // Alternativamente, si prefieres solo activar la sección del sidebar:
+    const sidebarLink = document.querySelector('[data-section="cotizaciones"]');
+    if (sidebarLink) {
+      (sidebarLink as HTMLElement).click();
     }
   };
 
@@ -66,7 +72,7 @@ export const DashboardActionCards: React.FC = () => {
         </CardContent>
       </Card>
       
-      {/* Actualizar la card de Cotización con el onClick y cursor pointer */}
+      {/* Card de Cotización actualizada con navegación */}
       <Card 
         className="bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer"
         onClick={handleQuoteClick}
@@ -76,11 +82,13 @@ export const DashboardActionCards: React.FC = () => {
             <FileSearch className="h-5 w-5 text-insurance-blue" />
           </Button>
           <span className="text-sm font-medium">Cotización</span>
-          <span className="text-xs text-gray-500 mt-1">3 nuevas</span>
+          <span className="text-xs text-gray-500 mt-1">
+            3 nuevas • {new Date('2025-05-07 08:47:15').toLocaleTimeString()}
+          </span>
         </CardContent>
       </Card>
     </div>
   );
 };
 
-export { DashboardActionCards };
+export default DashboardActionCards;
