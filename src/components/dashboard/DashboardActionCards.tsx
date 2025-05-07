@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
@@ -11,6 +10,14 @@ import {
 } from 'lucide-react';
 
 const DashboardActionCards = () => {
+  // Agregar el manejador del clic para la cotización
+  const handleQuoteClick = () => {
+    const cotizacionesSection = document.getElementById('sidebar-cotizaciones');
+    if (cotizacionesSection) {
+      cotizacionesSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
       <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
@@ -58,12 +65,17 @@ const DashboardActionCards = () => {
         </CardContent>
       </Card>
       
-      <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
+      {/* Actualizar la card de Cotización con el onClick y cursor pointer */}
+      <Card 
+        className="bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+        onClick={handleQuoteClick}
+      >
         <CardContent className="p-4 text-center flex flex-col items-center justify-center">
           <Button variant="outline" size="icon" className="h-10 w-10 rounded-full mb-3">
             <FileSearch className="h-5 w-5 text-insurance-blue" />
           </Button>
           <span className="text-sm font-medium">Cotización</span>
+          <span className="text-xs text-gray-500 mt-1">3 nuevas</span>
         </CardContent>
       </Card>
     </div>
