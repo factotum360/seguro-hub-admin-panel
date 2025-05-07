@@ -35,7 +35,11 @@ const SidebarItem = ({ icon: Icon, label, to, active = false, id }: SidebarItemP
   return (
     <Link 
       to={to} 
-      className={cn('sidebar-item', active && 'active')}
+      className={cn(
+        'sidebar-item', 
+        active && 'active',
+        'transition-all duration-300'
+      )}
       id={id}
       data-sidebar-item={id}
     >
@@ -60,6 +64,28 @@ type AdminSidebarProps = {
 const AdminSidebar = ({ open }: AdminSidebarProps) => {
   // Get current path for highlighting active link
   const pathname = window.location.pathname;
+
+  // Add CSS for highlight animation to document head
+  React.useEffect(() => {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .highlight-item {
+        animation: pulse 1s ease-in-out;
+        background-color: rgba(59, 130, 246, 0.15);
+      }
+      
+      @keyframes pulse {
+        0% { background-color: rgba(59, 130, 246, 0.1); }
+        50% { background-color: rgba(59, 130, 246, 0.3); }
+        100% { background-color: rgba(59, 130, 246, 0.1); }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
   return (
     <aside className={cn(

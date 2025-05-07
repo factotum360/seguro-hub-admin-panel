@@ -1,4 +1,3 @@
-
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,18 +9,70 @@ import {
   Tag,
   FileSearch
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const DashboardActionCards = () => {
   const navigate = useNavigate();
+  const [quoteCount, setQuoteCount] = useState<number>(0);
+  const [newQuotesCount, setNewQuotesCount] = useState<number>(3); // Default value from your requirements
 
-  // Update the handler to navigate to the quotes page
+  useEffect(() => {
+    // Fetch quotes count from Supabase
+    const fetchQuotesCount = async () => {
+      try {
+        // This is a placeholder query - you'll need to adjust it based on your actual quotes table
+        const { count, error } = await supabase
+          .from('quotes')
+          .select('*', { count: 'exact', head: true });
+        
+        if (error) throw error;
+        
+        if (count !== null) {
+          setQuoteCount(count);
+        }
+        
+        // Get new quotes count (quotes created today)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const { count: newCount, error: newError } = await supabase
+          .from('quotes')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', today.toISOString());
+        
+        if (newError) throw newError;
+        
+        if (newCount !== null) {
+          setNewQuotesCount(newCount);
+        }
+      } catch (error) {
+        console.error('Error fetching quotes count:', error);
+        // Keep the default values if there's an error
+      }
+    };
+
+    fetchQuotesCount();
+  }, []);
+
+  // Update the handler to navigate to the quotes page with state
   const handleQuoteClick = () => {
-    navigate('/dashboard/quotes');
+    navigate('/dashboard/quotes', { 
+      state: { fromDashboard: true }
+    });
+    
     // Find and scroll the sidebar item into view
     setTimeout(() => {
       const sidebarQuotesItem = document.querySelector('[data-sidebar-item="quotes"]');
       if (sidebarQuotesItem) {
         sidebarQuotesItem.scrollIntoView({ behavior: 'smooth' });
+        
+        // Add a visual highlight effect to the sidebar item
+        sidebarQuotesItem.classList.add('highlight-item');
+        setTimeout(() => {
+          sidebarQuotesItem.classList.remove('highlight-item');
+        }, 2000);
       }
     }, 100);
   };
@@ -73,9 +124,9 @@ const DashboardActionCards = () => {
         </CardContent>
       </Card>
       
-      {/* Update the Quote card with ARIA attributes and enhanced interactivity */}
+      {/* Cotizaciones card - Updated with enhanced interactivity and real-time data */}
       <Card 
-        className="bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer hover:bg-gray-50 animate-fade-in"
+        className="bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer hover:bg-gray-50 animate-fade-in transform hover:scale-105 duration-200"
         onClick={handleQuoteClick}
         tabIndex={0}
         role="button"
@@ -88,11 +139,15 @@ const DashboardActionCards = () => {
         }}
       >
         <CardContent className="p-4 text-center flex flex-col items-center justify-center">
-          <Button variant="outline" size="icon" className="h-10 w-10 rounded-full mb-3">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="h-10 w-10 rounded-full mb-3 group-hover:bg-blue-50"
+          >
             <FileSearch className="h-5 w-5 text-insurance-blue" />
           </Button>
           <span className="text-sm font-medium">Cotización</span>
-          <span className="text-xs text-gray-500 mt-1">3 nuevas</span>
+          <span className="text-xs text-gray-500 mt-1">{newQuotesCount} nuevas</span>
         </CardContent>
       </Card>
     </div>
