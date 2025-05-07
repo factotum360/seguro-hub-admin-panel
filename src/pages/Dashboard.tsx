@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -10,7 +11,8 @@ import {
   DollarSign, 
   FileText, 
   PieChart, 
-  UserCheck
+  UserCheck,
+  ArrowRight
 } from 'lucide-react';
 import { Chart } from '@/components/ui/chart';
 import DashboardStatCard from '@/components/dashboard/DashboardStatCard';
@@ -18,15 +20,26 @@ import TasksList from '@/components/dashboard/TasksList';
 import BirthdaysList from '@/components/dashboard/BirthdaysList';
 import RecentPoliciesTable from '@/components/dashboard/RecentPoliciesTable';
 import DashboardActionCards from '@/components/dashboard/DashboardActionCards';
+import { useCurrency } from '@/contexts/CurrencyContext';
+import { Button } from '@/components/ui/button';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const { currency, formatCurrency } = useCurrency();
+
+  // Updated colors based on the requirements
+  const activeColor = "#27AE60";  // Verde
+  const renewalColor = "#E67E22"; // Naranja
+  const expiredColor = "#E74C3C";  // Rojo
+  const expeditionColor = "#3498DB";  // Azul
+
   return (
     <AdminLayout>
       <div className="space-y-6 animate-fade-in">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold tracking-tight">Panel de Control</h1>
           <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-500">Última actualización: Mayo 6, 2025 - 10:30 AM</span>
+            <span className="text-sm text-gray-500">Última actualización: Mayo 7, 2025 - 10:30 AM</span>
           </div>
         </div>
 
@@ -43,39 +56,45 @@ const Dashboard = () => {
             }}
             color="blue"
           />
-          <DashboardStatCard
-            title="Pólizas Por Renovar"
-            value="17"
-            description="5 esta semana"
-            icon={Calendar}
-            trend={{
-              value: "-2%",
-              positive: false
-            }}
-            color="yellow"
-          />
-          <DashboardStatCard
-            title="Pólizas Vencidas"
-            value="8"
-            description="2 nuevas este mes"
-            icon={FileText}
-            trend={{
-              value: "+5%",
-              positive: false
-            }}
-            color="red"
-          />
-          <DashboardStatCard
-            title="En Expedición"
-            value="12"
-            description="4 desde ayer"
-            icon={FileText}
-            trend={{
-              value: "+8%",
-              positive: true
-            }}
-            color="green"
-          />
+          <Link to="/dashboard/policies?estado=por-renovar" className="block">
+            <DashboardStatCard
+              title="Pólizas Por Renovar"
+              value="17"
+              description="5 esta semana"
+              icon={Calendar}
+              trend={{
+                value: "-2%",
+                positive: false
+              }}
+              color="yellow"
+            />
+          </Link>
+          <Link to="/dashboard/policies?estado=vencidas" className="block">
+            <DashboardStatCard
+              title="Pólizas Vencidas"
+              value="8"
+              description="2 nuevas este mes"
+              icon={FileText}
+              trend={{
+                value: "+5%",
+                positive: false
+              }}
+              color="red"
+            />
+          </Link>
+          <Link to="/dashboard/policies?estado=expedicion" className="block">
+            <DashboardStatCard
+              title="En Expedición"
+              value="12"
+              description="4 desde ayer"
+              icon={FileText}
+              trend={{
+                value: "+8%",
+                positive: true
+              }}
+              color="green"
+            />
+          </Link>
         </div>
 
         {/* Quick Action Cards */}
@@ -106,6 +125,7 @@ const Dashboard = () => {
                       chart: { type: 'bar', stacked: false },
                       xaxis: { categories: ["Auto", "Hogar", "Vida", "Salud", "Empresarial"] },
                       tooltip: { shared: true, intersect: false },
+                      colors: [activeColor, renewalColor, expiredColor]
                     }}
                     series={[
                       { name: "Activas", data: [65, 34, 28, 42, 20] },
@@ -120,11 +140,20 @@ const Dashboard = () => {
             </Card>
             
             <Card>
-              <CardHeader>
-                <CardTitle>Pólizas Recientes</CardTitle>
-                <CardDescription>
-                  Últimas pólizas registradas en el sistema
-                </CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Pólizas Recientes</CardTitle>
+                  <CardDescription>
+                    Últimas pólizas registradas en el sistema
+                  </CardDescription>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => navigate('/dashboard/policies')}
+                >
+                  Ver todas <ArrowRight className="ml-1 h-4 w-4" />
+                </Button>
               </CardHeader>
               <CardContent>
                 <RecentPoliciesTable />
@@ -147,7 +176,7 @@ const Dashboard = () => {
                       options={{
                         chart: { type: 'donut' },
                         labels: ['Activos', 'Inactivos'],
-                        colors: ['#0b5ed7', '#e4e4e7'],
+                        colors: [activeColor, '#e4e4e7'],
                         legend: { show: false },
                         plotOptions: {
                           pie: {
@@ -166,7 +195,7 @@ const Dashboard = () => {
                   </div>
                   <div className="text-sm text-gray-500 text-center">
                     <div className="flex items-center gap-2 justify-center">
-                      <div className="w-3 h-3 rounded-full bg-insurance-blue"></div>
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: activeColor }}></div>
                       <span>152 clientes activos</span>
                     </div>
                     <div className="flex items-center gap-2 justify-center mt-2">
@@ -179,9 +208,15 @@ const Dashboard = () => {
             </Card>
 
             <Card>
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Tareas</CardTitle>
-                <CardDescription>Actividades pendientes</CardDescription>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => navigate('/dashboard/tasks')}
+                >
+                  Ver todas <ArrowRight className="ml-1 h-4 w-4" />
+                </Button>
               </CardHeader>
               <CardContent>
                 <TasksList />
@@ -215,7 +250,7 @@ const Dashboard = () => {
                   <div className="text-gray-500">12 siniestros</div>
                 </div>
                 <Progress value={60} className="h-2 bg-gray-100">
-                  <div className="h-full bg-yellow-500 rounded-full" />
+                  <div className="h-full" style={{ backgroundColor: renewalColor, borderRadius: '0.25rem' }} />
                 </Progress>
                 
                 <div className="flex justify-between items-center text-sm">
@@ -223,7 +258,7 @@ const Dashboard = () => {
                   <div className="text-gray-500">15 siniestros</div>
                 </div>
                 <Progress value={75} className="h-2 bg-gray-100">
-                  <div className="h-full bg-green-500 rounded-full" />
+                  <div className="h-full" style={{ backgroundColor: activeColor, borderRadius: '0.25rem' }} />
                 </Progress>
               </CardContent>
             </Card>
@@ -235,10 +270,10 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between">
-                  <div className="text-2xl font-bold">$24,560</div>
-                  <DollarSign className="h-12 w-12 text-insurance-red/20" />
+                  <div className="text-2xl font-bold">{formatCurrency(24560)}</div>
+                  <DollarSign className="h-12 w-12" style={{ color: `${expiredColor}20` }} />
                 </div>
-                <div className="text-sm text-red-500 mt-2">
+                <div className="text-sm mt-2" style={{ color: expiredColor }}>
                   12 pólizas con pagos atrasados
                 </div>
               </CardContent>
