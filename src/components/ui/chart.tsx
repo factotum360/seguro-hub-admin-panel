@@ -353,7 +353,9 @@ function getPayloadConfigFromPayload(
     : config[key as keyof typeof config]
 }
 
+// Export the components
 export {
+  ChartContainer as Chart, // Export ChartContainer as Chart for backward compatibility
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
