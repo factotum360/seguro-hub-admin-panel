@@ -4,11 +4,15 @@ import { DashboardActionCards } from './DashboardActionCards';
 
 const DashboardContent: React.FC = () => {
   return (
-    <>
-      <DashboardActionCards />
-      {/* Resto del contenido existente */}
-    </>
+    <section className="dashboard-content">
+      <header className="dashboard-header">
+        <h1>Bienvenido al Panel de Control</h1>
+      </header>
+      <main className="dashboard-main">
+        <DashboardActionCards />
+      </main>
+    </section>
   );
 };
 
-export { DashboardContent };
+export default DashboardContent;
