@@ -53,7 +53,7 @@ const ChartContainer = React.forwardRef<
   const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`
 
   // If we have options and series props, create a Recharts chart based on these props
-  const renderChart = () => {
+  const renderChart = (): React.ReactElement | null => {
     if (options && series) {
       // This is a simplified implementation - would need to expand for real-world use
       const chartType = type || 'bar';
@@ -104,11 +104,11 @@ const ChartContainer = React.forwardRef<
             </RechartsPrimitive.PieChart>
           );
         default:
-          return children || null;
+          return children as React.ReactElement | null;
       }
     }
     
-    return children || null;
+    return children as React.ReactElement | null;
   };
 
   return (
@@ -445,3 +445,4 @@ export {
   ChartLegendContent,
   ChartStyle,
 }
+
