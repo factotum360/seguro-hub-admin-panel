@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 
@@ -32,17 +33,83 @@ function useChart() {
   return context
 }
 
+// Extend the ChartContainer component props to include options, series, type, etc.
+interface ChartContainerProps extends React.ComponentProps<"div"> {
+  config?: ChartConfig
+  children?: React.ReactNode
+  // ReCharts specific props
+  options?: any
+  series?: any[]
+  type?: string
+  width?: string | number
+  height?: number
+}
+
 const ChartContainer = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"div"> & {
-    config: ChartConfig
-    children: React.ComponentProps<
-      typeof RechartsPrimitive.ResponsiveContainer
-    >["children"]
-  }
->(({ id, className, children, config, ...props }, ref) => {
+  ChartContainerProps
+>(({ id, className, children, config = {}, options, series, type, width, height, ...props }, ref) => {
   const uniqueId = React.useId()
   const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`
+
+  // If we have options and series props, create a Recharts chart based on these props
+  const renderChart = () => {
+    if (options && series) {
+      // This is a simplified implementation - would need to expand for real-world use
+      const chartType = type || 'bar';
+      
+      switch(chartType) {
+        case 'bar':
+          return (
+            <RechartsPrimitive.BarChart data={series[0]?.data?.map((value: number, index: number) => {
+              const item: Record<string, any> = { name: options.xaxis?.categories?.[index] || `Item ${index}` };
+              series.forEach((s, sIndex) => {
+                item[s.name || `Series ${sIndex}`] = s.data[index];
+              });
+              return item;
+            }) || []}>
+              <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
+              <RechartsPrimitive.XAxis dataKey="name" />
+              <RechartsPrimitive.YAxis />
+              <RechartsPrimitive.Tooltip />
+              <RechartsPrimitive.Legend />
+              {series.map((s, index) => (
+                <RechartsPrimitive.Bar 
+                  key={index}
+                  dataKey={s.name || `Series ${index}`} 
+                  fill={`hsl(${(index * 50) % 360}, 70%, 50%)`} 
+                />
+              ))}
+            </RechartsPrimitive.BarChart>
+          );
+        case 'donut':
+        case 'pie':
+          return (
+            <RechartsPrimitive.PieChart>
+              <RechartsPrimitive.Pie 
+                data={series.map((value, index) => ({
+                  name: options.labels?.[index] || `Item ${index}`,
+                  value: Array.isArray(value) ? value[0] : value,
+                  fill: options.colors?.[index] || `hsl(${(index * 50) % 360}, 70%, 50%)`
+                }))} 
+                dataKey="value"
+                nameKey="name"
+                cx="50%" 
+                cy="50%" 
+                innerRadius={chartType === 'donut' ? '70%' : '0'}
+                outerRadius={chartType === 'donut' ? '90%' : '80%'}
+              />
+              {!options.legend?.show && <RechartsPrimitive.Legend />}
+              <RechartsPrimitive.Tooltip />
+            </RechartsPrimitive.PieChart>
+          );
+        default:
+          return children;
+      }
+    }
+    
+    return children;
+  };
 
   return (
     <ChartContext.Provider value={{ config }}>
@@ -53,19 +120,33 @@ const ChartContainer = React.forwardRef<
           "flex aspect-video justify-center text-xs [&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-none [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-sector]:outline-none [&_.recharts-surface]:outline-none",
           className
         )}
+        style={{ 
+          width: width || '100%', 
+          height: height || 300 
+        }}
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
-        <RechartsPrimitive.ResponsiveContainer>
-          {children}
-        </RechartsPrimitive.ResponsiveContainer>
+        {width && height ? (
+          renderChart()
+        ) : (
+          <RechartsPrimitive.ResponsiveContainer>
+            {renderChart()}
+          </RechartsPrimitive.ResponsiveContainer>
+        )}
       </div>
     </ChartContext.Provider>
   )
 })
 ChartContainer.displayName = "Chart"
 
-const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
+const ChartStyle = ({ id, config }: { id: string; config?: ChartConfig }) => {
+  // Fix for "Cannot convert undefined or null to object" error
+  // Make sure config is always an object, not null or undefined
+  if (!config || typeof config !== 'object') {
+    return null;
+  }
+  
   const colorConfig = Object.entries(config).filter(
     ([_, config]) => config.theme || config.color
   )
@@ -88,6 +169,7 @@ ${colorConfig
       itemConfig.color
     return color ? `  --color-${key}: ${color};` : null
   })
+  .filter(Boolean)
   .join("\n")}
 }
 `
