@@ -104,11 +104,11 @@ const ChartContainer = React.forwardRef<
             </RechartsPrimitive.PieChart>
           );
         default:
-          return children;
+          return children || null;
       }
     }
     
-    return children;
+    return children || null;
   };
 
   return (
