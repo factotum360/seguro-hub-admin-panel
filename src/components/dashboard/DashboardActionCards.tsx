@@ -1,3 +1,5 @@
+
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
@@ -10,12 +12,18 @@ import {
 } from 'lucide-react';
 
 const DashboardActionCards = () => {
-  // Agregar el manejador del clic para la cotización
+  const navigate = useNavigate();
+
+  // Update the handler to navigate to the quotes page
   const handleQuoteClick = () => {
-    const cotizacionesSection = document.getElementById('sidebar-cotizaciones');
-    if (cotizacionesSection) {
-      cotizacionesSection.scrollIntoView({ behavior: 'smooth' });
-    }
+    navigate('/dashboard/quotes');
+    // Find and scroll the sidebar item into view
+    setTimeout(() => {
+      const sidebarQuotesItem = document.querySelector('[data-sidebar-item="quotes"]');
+      if (sidebarQuotesItem) {
+        sidebarQuotesItem.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   return (
@@ -65,10 +73,19 @@ const DashboardActionCards = () => {
         </CardContent>
       </Card>
       
-      {/* Actualizar la card de Cotización con el onClick y cursor pointer */}
+      {/* Update the Quote card with ARIA attributes and enhanced interactivity */}
       <Card 
-        className="bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+        className="bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer hover:bg-gray-50 animate-fade-in"
         onClick={handleQuoteClick}
+        tabIndex={0}
+        role="button"
+        aria-label="Ver cotizaciones"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleQuoteClick();
+          }
+        }}
       >
         <CardContent className="p-4 text-center flex flex-col items-center justify-center">
           <Button variant="outline" size="icon" className="h-10 w-10 rounded-full mb-3">

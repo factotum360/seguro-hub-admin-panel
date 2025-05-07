@@ -28,11 +28,17 @@ type SidebarItemProps = {
   label: string;
   to: string;
   active?: boolean;
+  id?: string;
 };
 
-const SidebarItem = ({ icon: Icon, label, to, active = false }: SidebarItemProps) => {
+const SidebarItem = ({ icon: Icon, label, to, active = false, id }: SidebarItemProps) => {
   return (
-    <Link to={to} className={cn('sidebar-item', active && 'active')}>
+    <Link 
+      to={to} 
+      className={cn('sidebar-item', active && 'active')}
+      id={id}
+      data-sidebar-item={id}
+    >
       <Icon size={18} />
       <span className="text-sm">{label}</span>
     </Link>
@@ -79,6 +85,7 @@ const AdminSidebar = ({ open }: AdminSidebarProps) => {
           label="Dashboard" 
           to="/dashboard" 
           active={pathname === '/dashboard'}
+          id="dashboard"
         />
 
         <SidebarCategory title="Principales" />
@@ -87,30 +94,35 @@ const AdminSidebar = ({ open }: AdminSidebarProps) => {
           label="Clientes" 
           to="/dashboard/clients" 
           active={pathname.includes('/dashboard/clients')}
+          id="clients"
         />
         <SidebarItem 
           icon={FileText} 
           label="Pólizas" 
           to="/dashboard/policies" 
           active={pathname.includes('/dashboard/policies')}
+          id="policies"
         />
         <SidebarItem 
           icon={AlertTriangle} 
           label="Siniestros" 
           to="/dashboard/claims" 
           active={pathname.includes('/dashboard/claims')}
+          id="claims"
         />
         <SidebarItem 
           icon={Briefcase} 
           label="Ventas" 
           to="/dashboard/sales" 
           active={pathname.includes('/dashboard/sales')}
+          id="sales"
         />
         <SidebarItem 
           icon={CreditCard} 
           label="Cobros" 
           to="/dashboard/payments" 
           active={pathname.includes('/dashboard/payments')}
+          id="payments"
         />
 
         <SidebarCategory title="Gestión" />
@@ -119,42 +131,49 @@ const AdminSidebar = ({ open }: AdminSidebarProps) => {
           label="Leads" 
           to="/dashboard/leads" 
           active={pathname.includes('/dashboard/leads')}
+          id="leads"
         />
         <SidebarItem 
           icon={UserCheck} 
           label="Agentes" 
           to="/dashboard/agents" 
           active={pathname.includes('/dashboard/agents')}
+          id="agents"
         />
         <SidebarItem 
           icon={Tag} 
           label="Ramos" 
           to="/dashboard/branches" 
           active={pathname.includes('/dashboard/branches')}
+          id="branches"
         />
         <SidebarItem 
           icon={Building} 
           label="Aseguradoras" 
           to="/dashboard/insurers" 
           active={pathname.includes('/dashboard/insurers')}
+          id="insurers"
         />
         <SidebarItem 
           icon={CheckSquare} 
           label="Tareas" 
           to="/dashboard/tasks" 
           active={pathname.includes('/dashboard/tasks')}
+          id="tasks"
         />
         <SidebarItem 
           icon={Calendar} 
           label="Calendario" 
           to="/dashboard/calendar" 
           active={pathname.includes('/dashboard/calendar')}
+          id="calendar"
         />
         <SidebarItem 
           icon={Bell} 
           label="Notificaciones" 
           to="/dashboard/notifications" 
           active={pathname.includes('/dashboard/notifications')}
+          id="notifications"
         />
         
         <SidebarCategory title="Reportes" />
@@ -163,24 +182,28 @@ const AdminSidebar = ({ open }: AdminSidebarProps) => {
           label="Estadísticas" 
           to="/dashboard/statistics" 
           active={pathname.includes('/dashboard/statistics')}
+          id="statistics"
         />
         <SidebarItem 
           icon={Clipboard} 
           label="Cotizaciones" 
           to="/dashboard/quotes" 
           active={pathname.includes('/dashboard/quotes')}
+          id="quotes"
         />
         <SidebarItem 
           icon={FolderOpen} 
           label="Archivos" 
           to="/dashboard/files" 
           active={pathname.includes('/dashboard/files')}
+          id="files"
         />
         <SidebarItem 
           icon={FileCheck} 
           label="Facturas" 
           to="/dashboard/invoices" 
           active={pathname.includes('/dashboard/invoices')}
+          id="invoices"
         />
         
         <SidebarCategory title="Sistema" />
@@ -189,6 +212,7 @@ const AdminSidebar = ({ open }: AdminSidebarProps) => {
           label="Configuración" 
           to="/dashboard/settings" 
           active={pathname.includes('/dashboard/settings')}
+          id="settings"
         />
       </nav>
     </aside>
