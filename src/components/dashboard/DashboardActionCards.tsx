@@ -11,14 +11,13 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-export const DashboardActionCards: React.FC = () => {
+// Cambiamos a una exportación nombrada única
+export function DashboardActionCards() {
   const navigate = useNavigate();
   
-  // Actualizar el manejador del clic para la cotización
-  const handleQuoteClick = () => {
-    // Navegar a la sección de cotizaciones y activar el sidebar
+  const handleQuoteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     navigate('/cotizaciones');
-    // Alternativamente, si prefieres solo activar la sección del sidebar:
     const sidebarLink = document.querySelector('[data-section="cotizaciones"]');
     if (sidebarLink) {
       (sidebarLink as HTMLElement).click();
@@ -72,23 +71,35 @@ export const DashboardActionCards: React.FC = () => {
         </CardContent>
       </Card>
       
-      {/* Card de Cotización actualizada con navegación */}
       <Card 
-        className="bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+        role="button"
+        tabIndex={0}
+        className="bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
         onClick={handleQuoteClick}
+        onKeyPress={(e) => e.key === 'Enter' && handleQuoteClick(e as any)}
       >
         <CardContent className="p-4 text-center flex flex-col items-center justify-center">
-          <Button variant="outline" size="icon" className="h-10 w-10 rounded-full mb-3">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="h-10 w-10 rounded-full mb-3 group-hover:bg-insurance-lightBlue/10 transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleQuoteClick(e);
+            }}
+          >
             <FileSearch className="h-5 w-5 text-insurance-blue" />
           </Button>
-          <span className="text-sm font-medium">Cotización</span>
-          <span className="text-xs text-gray-500 mt-1">
-            3 nuevas • {new Date('2025-05-07 08:47:15').toLocaleTimeString()}
+          <span className="text-sm font-medium group-hover:text-insurance-blue transition-colors">
+            Cotización
+          </span>
+          <span className="text-xs text-insurance-gray mt-1">
+            3 nuevas • {new Date('2025-05-07 09:04:54').toLocaleTimeString()}
           </span>
         </CardContent>
       </Card>
     </div>
   );
-};
+}
 
-export default DashboardActionCards;
+// Eliminamos la exportación default y mantenemos solo la exportación nombrada
