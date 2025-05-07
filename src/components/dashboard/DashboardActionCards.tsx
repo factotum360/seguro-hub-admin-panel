@@ -19,56 +19,53 @@ const DashboardActionCards = () => {
   const [newQuotesCount, setNewQuotesCount] = useState<number>(3); // Default value from your requirements
 
   useEffect(() => {
-    // Fetch quotes count from Supabase
     const fetchQuotesCount = async () => {
       try {
-        // This is a placeholder query - you'll need to adjust it based on your actual quotes table
+        // Fetch total quotes count
         const { count, error } = await supabase
           .from('quotes')
           .select('*', { count: 'exact', head: true });
-        
+
         if (error) throw error;
-        
+
         if (count !== null) {
           setQuoteCount(count);
         }
-        
-        // Get new quotes count (quotes created today)
+
+        // Fetch today's new quotes count
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
+        today.setHours(0, 0, 0, 0); // Reset to midnight
+
         const { count: newCount, error: newError } = await supabase
           .from('quotes')
           .select('*', { count: 'exact', head: true })
           .gte('created_at', today.toISOString());
-        
+
         if (newError) throw newError;
-        
+
         if (newCount !== null) {
           setNewQuotesCount(newCount);
         }
       } catch (error) {
         console.error('Error fetching quotes count:', error);
-        // Keep the default values if there's an error
+        toast.error('Error al cargar las cotizaciones. Intenta nuevamente.');
       }
     };
 
     fetchQuotesCount();
   }, []);
 
-  // Update the handler to navigate to the quotes page with state
   const handleQuoteClick = () => {
     navigate('/dashboard/quotes', { 
       state: { fromDashboard: true }
     });
-    
-    // Find and scroll the sidebar item into view
+
+    // Highlight the sidebar item
     setTimeout(() => {
       const sidebarQuotesItem = document.querySelector('[data-sidebar-item="quotes"]');
       if (sidebarQuotesItem) {
         sidebarQuotesItem.scrollIntoView({ behavior: 'smooth' });
-        
-        // Add a visual highlight effect to the sidebar item
+
         sidebarQuotesItem.classList.add('highlight-item');
         setTimeout(() => {
           sidebarQuotesItem.classList.remove('highlight-item');
@@ -87,7 +84,7 @@ const DashboardActionCards = () => {
           <span className="text-sm font-medium">Nuevo Cliente</span>
         </CardContent>
       </Card>
-      
+
       <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
         <CardContent className="p-4 text-center flex flex-col items-center justify-center">
           <Button variant="outline" size="icon" className="h-10 w-10 rounded-full mb-3">
@@ -96,7 +93,7 @@ const DashboardActionCards = () => {
           <span className="text-sm font-medium">Nueva Póliza</span>
         </CardContent>
       </Card>
-      
+
       <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
         <CardContent className="p-4 text-center flex flex-col items-center justify-center">
           <Button variant="outline" size="icon" className="h-10 w-10 rounded-full mb-3">
@@ -105,7 +102,7 @@ const DashboardActionCards = () => {
           <span className="text-sm font-medium">Nuevo Siniestro</span>
         </CardContent>
       </Card>
-      
+
       <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
         <CardContent className="p-4 text-center flex flex-col items-center justify-center">
           <Button variant="outline" size="icon" className="h-10 w-10 rounded-full mb-3">
@@ -114,7 +111,7 @@ const DashboardActionCards = () => {
           <span className="text-sm font-medium">Aseguradora</span>
         </CardContent>
       </Card>
-      
+
       <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
         <CardContent className="p-4 text-center flex flex-col items-center justify-center">
           <Button variant="outline" size="icon" className="h-10 w-10 rounded-full mb-3">
@@ -123,8 +120,7 @@ const DashboardActionCards = () => {
           <span className="text-sm font-medium">Nuevo Ramo</span>
         </CardContent>
       </Card>
-      
-      {/* Cotizaciones card - Updated with enhanced interactivity and real-time data */}
+
       <Card 
         className="bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer hover:bg-gray-50 animate-fade-in transform hover:scale-105 duration-200"
         onClick={handleQuoteClick}
